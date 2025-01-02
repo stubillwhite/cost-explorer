@@ -1,0 +1,82 @@
+[tool.poetry]
+name = "cost_explorer"
+version = "0.1.0"
+description = ""
+authors = ["John Doe <johndoe@mail.com>"]
+readme = "README.md"
+
+[tool.poetry.scripts]
+run-app = "cost_explorer.__main__:main"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+pip-audit = "^2.7.3"
+isort = "^5.13.2"
+requests = "^2.32.3"
+xlsxwriter = "^3.2.0"
+pandas = "^2.2.3"
+numpy = "^2.2.1"
+boto3 = "^1.35.90"
+types-boto3 = "^1.35.90"
+pandas-stubs = "^2.2.3.241126"
+types-python-dateutil = "^2.9.0.20241206"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.1.1"
+pytest-cov = "^5.0.0"
+coverage = "^7.4.4"
+pytest-mock = "^3.14.0"
+ruff = "^0.3.5"
+black = "^24.3.0"
+mypy = "^1.9.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+########################################
+# Coverage
+########################################
+
+[tool.coverage.paths]
+source = ["src", "*/site-packages"]
+
+[tool.coverage.run]
+branch = true
+source = ["cost_explorer"]
+omit = ["__init__.py", "__main__.py"]
+
+########################################
+# Formatting
+########################################
+
+[tool.black]
+line-length = 120
+
+[tool.isort]
+profile = "black"
+
+########################################
+# Linting
+########################################
+
+[tool.ruff]
+src = ['src']
+extend-exclude = ['tests']
+line-length = 120
+
+[tool.ruff.lint]
+extend-select = [
+    "ANN",      # flake8-annotations for type annotations
+]
+extend-ignore = [
+    "ANN101",   # Missing type annotation for self in method
+    "ANN102",   # Missing type annotation for cls in classmethod
+    "ANN204",   # Missing return type annotation for special method
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = 'google'
+
+[tool.ruff.lint.isort]
+force-single-line = true
