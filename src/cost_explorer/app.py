@@ -35,6 +35,7 @@ class Report:
 def _create_report(
     title: str,
     group_by: List[Dict[str, str]] = [],
+    filter_by: Dict[str, str] = None,
     data_type: DataType = DataType.Total,
     charts: List[Chart] = [Chart.Timeline],
     fmt_label: Callable[[str], str] = lambda x: x,
@@ -44,7 +45,8 @@ def _create_report(
     start = (datetime.date.today() - relativedelta(months=+MONTHS_TO_REPORT)).replace(day=1)
     end = datetime.date.today().replace(day=1)
 
-    filter = {"Not": {"Dimensions": {"Key": "RECORD_TYPE", "Values": ["Credit", "Refund", "Upfront"]}}}
+    default_filter = {"Not": {"Dimensions": {"Key": "RECORD_TYPE", "Values": ["Credit", "Refund", "Upfront"]}}}
+    full_filter = default_filter if not filter_by else {"And": [default_filter, filter_by]}
 
     responses = _paginate(
         client.get_cost_and_usage,
@@ -53,7 +55,7 @@ def _create_report(
             "Granularity": "MONTHLY",
             "Metrics": ["UnblendedCost"],
             "GroupBy": group_by,
-            "Filter": filter,
+            "Filter": full_filter,
         },
     )
 
@@ -204,21 +206,29 @@ def _insert_charts(workbook, worksheet, report: Report) -> None:
 
 def strip_prefix(prefix: str) -> Callable[[str], str]:
     def strip(s: str) -> str:
-        return s.replace(prefix, "", 1) 
+        return s.replace(prefix, "", 1)
 
     return strip
 
 
 def main() -> None:
     # fmt: off
+    filter_xfer_costs = {"Dimensions": {"Key": "USAGE_TYPE", "Values": ["NatGateway-Bytes", "NatGateway-Hours"]}}
+    group_usage_type = [{"Type": "DIMENSION", "Key": "USAGE_TYPE"}]
+    group_subproduct = [{"Type": "TAG",       "Key": "SubProduct"}]
+    group_service = [{"Type": "DIMENSION", "Key": "SERVICE"}]
+    group_region = [{"Type": "DIMENSION", "Key": "REGION"}]
+
     reports = [
-        _create_report("Total",            data_type=DataType.Total),
-        _create_report("TotalChange",      data_type=DataType.Delta),
-        _create_report("SubProduct",       group_by=[{"Type": "TAG",       "Key": "SubProduct"}], data_type=DataType.Total, charts=[Chart.PieChartOfLatest], fmt_label=strip_prefix("SubProduct$")),
-        _create_report("Services",         group_by=[{"Type": "DIMENSION", "Key": "SERVICE"}],    data_type=DataType.Total, charts=[Chart.PieChartOfLatest]),
-        _create_report("ServicesChange",   group_by=[{"Type": "DIMENSION", "Key": "SERVICE"}],    data_type=DataType.Delta, charts=[Chart.TimelineByCategory]),
-        _create_report("Regions",          group_by=[{"Type": "DIMENSION", "Key": "REGION"}],     data_type=DataType.Total, charts=[Chart.PieChartOfLatest]),
-        _create_report("RegionsChange",    group_by=[{"Type": "DIMENSION", "Key": "REGION"}],     data_type=DataType.Delta, charts=[Chart.TimelineByCategory]),
+          _create_report("Total",            data_type=DataType.Total),
+          _create_report("TotalChange",      data_type=DataType.Delta),
+          _create_report("Transfer",         group_by=group_usage_type, filter_by=filter_xfer_costs,    data_type=DataType.Total, charts=[Chart.TimelineByCategory]),
+          _create_report("TransferChange",   group_by=group_usage_type, filter_by=filter_xfer_costs,    data_type=DataType.Delta, charts=[Chart.TimelineByCategory]),
+          _create_report("SubProduct",       group_by=group_subproduct, data_type=DataType.Total, charts=[Chart.PieChartOfLatest], fmt_label=strip_prefix("SubProduct$")),
+          _create_report("Services",         group_by=group_service,    data_type=DataType.Total, charts=[Chart.PieChartOfLatest]),
+          _create_report("ServicesChange",   group_by=group_service,    data_type=DataType.Delta, charts=[Chart.TimelineByCategory]),
+          _create_report("Regions",          group_by=group_region,     data_type=DataType.Total, charts=[Chart.PieChartOfLatest]),
+          _create_report("RegionsChange",    group_by=group_region,     data_type=DataType.Delta, charts=[Chart.TimelineByCategory]),
     ]
     # fmt: on
 

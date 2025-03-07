@@ -17,22 +17,32 @@ function generate-report() {
 mkdir -p reports
 
 generate-report agdatascience non-prod
-generate-report bos           non-prod
+generate-report bos           utility
+generate-report bos           dev
+generate-report bos           staging
 generate-report bos           prod
 generate-report cef           embase
 generate-report cef           prod
 generate-report dkp           non-prod
 generate-report dkp           prod
-# generate-report recs          dev
-# generate-report recs          prod
 generate-report sc-content    non-prod
 generate-report sc-content    prod
 generate-report sd-content    non-prod
 generate-report sd-content    prod
 
-# generate-report cef           backup
-# generate-report cef           candi
-# generate-report scopus-search non-prod
-# generate-report scopus-search prod
+generate-report databricks    prod
+generate-report databricks    nonprod
+generate-report dp            nonprod
+generate-report dp            prod
+generate-report dp            sandbox-nonprod
+generate-report dp            tooling
+
+#generate-report recs          dev
+#generate-report recs          prod
+## generate-report scopus-search non-prod
+## generate-report scopus-search prod
+
+## generate-report cef           backup
+## generate-report cef           candi
 
 open reports
