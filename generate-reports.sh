@@ -7,8 +7,7 @@ function generate-report() {
     echo "--------------------------------------------------------------------------------"
     echo
 
-    aws-login "${account}" "${env}"
-    echo
+    aws-login "${account}" "${env}" > /dev/null
 
     make run
     mv "cost-explorer-report.xlsx" "reports/${account}-${env}-cost-explorer-report.xlsx"
