@@ -16,9 +16,6 @@ function generate-report() {
 mkdir -p reports
 
 generate-report agdatascience non-prod
-generate-report bos           utility
-generate-report bos           dev
-generate-report bos           staging
 generate-report bos           prod
 generate-report cef           embase
 generate-report cef           prod
@@ -36,8 +33,8 @@ generate-report dp            prod
 generate-report dp            sandbox-nonprod
 generate-report dp            tooling
 
-#generate-report recs          dev
-#generate-report recs          prod
+generate-report recs          dev
+generate-report recs          prod
 ## generate-report scopus-search non-prod
 ## generate-report scopus-search prod
 
