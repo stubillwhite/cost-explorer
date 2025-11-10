@@ -1,38 +1,46 @@
-[tool.poetry]
+[project]
 name = "cost_explorer"
 version = "0.1.0"
 description = ""
-authors = ["John Doe <johndoe@mail.com>"]
+authors = [{name = "John Doe", email = "johndoe@mail.com"}]
 readme = "README.md"
 
-[tool.poetry.scripts]
+requires-python = ">=3.12"
+dependencies = [
+    "pip-audit>=2.7.3",
+    "isort>=5.13.2",
+    "monkeytype>=23.3.0",
+    "xlsxwriter>=3.2.9",
+    "pandas>=2.3.3",
+    "numpy>=2.3.4",
+    "boto3>=1.40.69",
+    "types-boto3>=1.40.69",
+    "pandas-stubs>=2.3.2.250926",
+    "types-python-dateutil>=2.9.0.20251108",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.1.1",
+    "pytest-cov>=5.0.0",
+    "coverage>=7.4.4",
+    "pytest-mock>=3.14.0",
+    "ruff>=0.3.5",
+    "black>=24.3.0",
+    "mypy>=1.9.0",
+]
+
+[project.scripts]
 run-app = "cost_explorer.__main__:main"
 
-[tool.poetry.dependencies]
-python = "^3.12"
-pip-audit = "^2.7.3"
-isort = "^5.13.2"
-requests = "^2.32.3"
-xlsxwriter = "^3.2.0"
-pandas = "^2.2.3"
-numpy = "^2.2.1"
-boto3 = "^1.35.90"
-types-boto3 = "^1.35.90"
-pandas-stubs = "^2.2.3.241126"
-types-python-dateutil = "^2.9.0.20241206"
-
-[tool.poetry.group.dev.dependencies]
-pytest = "^8.1.1"
-pytest-cov = "^5.0.0"
-coverage = "^7.4.4"
-pytest-mock = "^3.14.0"
-ruff = "^0.3.5"
-black = "^24.3.0"
-mypy = "^1.9.0"
+[[tool.uv.index]]
+name = "pypi-default-virtual"
+url = "https://rt.artifactory.tio.systems/artifactory/api/pypi/pypi-default-virtual/simple"
+default = true
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 ########################################
 # Coverage
@@ -70,8 +78,6 @@ extend-select = [
     "ANN",      # flake8-annotations for type annotations
 ]
 extend-ignore = [
-    "ANN101",   # Missing type annotation for self in method
-    "ANN102",   # Missing type annotation for cls in classmethod
     "ANN204",   # Missing return type annotation for special method
 ]
 
